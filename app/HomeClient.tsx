@@ -8,7 +8,27 @@ const DEFAULT_TOPICS = [
   "what I learned this week",
   "an entertaining childhood memory",
   "my dream travel destination",
-  "the best advice I've ever received"
+  "the best advice I've ever received",
+  "the return of Y2K fashion aesthetics",
+  "clean girl makeup vs maximalist beauty",
+  "how tiktok impacts fast fashion",
+  "sustainability in the beauty industry",
+  "my signature scent profile",
+  "how AI is changing creative jobs",
+  "the future of spatial computing and AR",
+  "is the metaverse dead or evolving?",
+  "my favorite productivity app stack",
+  "short-form video vs long-form content",
+  "parasocial relationships with influencers",
+  "cancel culture and brand accountability",
+  "the psychology behind doomscrolling",
+  "how algorithms shape our music taste",
+  "the best subscription service I pay for",
+  "remote work vs return-to-office culture",
+  "the evolution of internet meme culture",
+  "how I curate my digital identity",
+  "my strategy for unplugging from screens",
+  "a niche internet micro-community I observe"
 ];
 
 function TimerView({ topic, onBack, onComplete }: { topic: string; onBack: () => void; onComplete: () => void }) {
@@ -83,13 +103,13 @@ function TimerView({ topic, onBack, onComplete }: { topic: string; onBack: () =>
         {phase === 'brainstorm' ? 'Brainstorming Session' : phase === 'speak' ? 'Speaking Session' : 'Session Complete'}
       </h2>
       
-      <p className="text-3xl font-black leading-tight max-w-2xl mb-12">
+      <p className="text-[2rem] font-extrabold tracking-tight leading-tight max-w-2xl mb-12">
         {topic}
       </p>
 
       {phase !== 'completed' ? (
         <>
-          <div className="text-8xl font-black tabular-nums tracking-tighter mb-12 drop-shadow-sm">
+          <div className="text-8xl font-extrabold tabular-nums tracking-tight mb-12 drop-shadow-sm">
             {timeString}
           </div>
 
@@ -162,7 +182,7 @@ function HistoryView({ onBack }: { onBack: () => void }) {
         >
           ← Back
         </button>
-        <h2 className="text-2xl font-black uppercase tracking-widest">
+        <h2 className="text-2xl font-extrabold tracking-tight">
           Speaking History
         </h2>
         <div className="w-16"></div> {/* spacer to center title */}
@@ -209,6 +229,8 @@ export default function Home() {
   const [spinOffset, setSpinOffset] = useState(0);
   const [selectedTopicStr, setSelectedTopicStr] = useState(DEFAULT_TOPICS[0]);
   const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newTopicVal, setNewTopicVal] = useState("");
   
   const handleSpin = () => {
     if (isSpinning) return;
@@ -247,7 +269,8 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center bg-[#f4f4f5] font-sans text-black overflow-hidden selection:bg-rose-200">
       
       {view === 'spinner' ? (
-        <main className="flex h-[500px] w-full max-w-5xl items-center justify-between rounded-3xl border-4 border-black bg-white p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all relative">
+        <div className="flex flex-col items-center w-full max-w-5xl">
+        <main className="flex h-[500px] w-full items-center justify-between rounded-3xl border-4 border-black bg-white p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all relative">
           
           <button 
             onClick={() => setView('history')}
@@ -258,7 +281,10 @@ export default function Home() {
 
           {/* APP TITLE */}
           <div className="flex-[1.2] pr-8 z-10 w-full mt-4">
-            <h1 className="text-6xl font-black uppercase tracking-tighter leading-[0.9] drop-shadow-sm">
+            <h1 
+              className="text-[4rem] tracking-tight leading-[0.9] drop-shadow-sm"
+              style={{ fontFamily: 'digibop, sans-serif', fontStyle: 'normal', fontWeight: 400 }}
+            >
               Impromptu<br/>
               <span className="text-rose-500">Speaking</span><br/>
               Spinner
@@ -295,7 +321,7 @@ export default function Home() {
                       
                       return (
                         <div key={i} className="h-[72px] flex items-center justify-center px-8 w-full">
-                          <span className={`font-bold text-xl text-center leading-tight transition-all duration-300 ${isActiveVisual ? 'text-black text-[1.4rem] scale-[1.05] drop-shadow-sm' : 'text-zinc-400 opacity-80'}`}>
+                          <span className={`font-bold text-xl text-center leading-tight transition-all duration-300 ${isActiveVisual ? 'text-rose-500 drop-shadow-sm' : 'text-zinc-400 opacity-80'}`}>
                              {topic}
                           </span>
                         </div>
@@ -332,6 +358,13 @@ export default function Home() {
           </div>
 
         </main>
+        <button 
+          onClick={() => setShowAddModal(true)}
+          className="mt-8 text-base font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
+        >
+          + Add Custom Topic
+        </button>
+        </div>
       ) : view === 'timer' ? (
         <TimerView 
           topic={selectedTopicStr} 
@@ -344,12 +377,53 @@ export default function Home() {
         />
       )}
 
+      {/* Add Custom Topic Modal */}
+      {view === 'spinner' && showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300 p-4">
+          <div className="w-[90%] max-w-md rounded-3xl border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-6 relative">
+            <button 
+              onClick={() => setShowAddModal(false)}
+              className="absolute top-4 right-5 text-xl font-bold text-zinc-400 hover:text-black transition-colors"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-extrabold tracking-tight mt-2 text-rose-500 uppercase">Add Custom Topic</h2>
+            <textarea
+              value={newTopicVal}
+              onChange={(e) => setNewTopicVal(e.target.value)}
+              placeholder="e.g. the impact of tiktok on fast fashion..."
+              className="w-full rounded-2xl border-4 border-black p-4 font-bold placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-rose-200 resize-none h-32"
+            />
+            <button 
+              onClick={() => {
+                if (newTopicVal.trim()) {
+                  setTopics([newTopicVal.trim(), ...topics]);
+                  setNewTopicVal("");
+                  setShowAddModal(false);
+                }
+              }}
+              className="w-full rounded-2xl bg-black py-4 text-lg font-bold text-white transition-transform hover:-translate-y-1 hover:shadow-[0px_4px_0px_0px_rgba(225,29,72,1)] active:translate-y-0 active:shadow-none"
+            >
+              Add to Spinner
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Modal Overlay */}
       {view === 'spinner' && showModal && topics.length > 0 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300">
-          <div className="w-[90%] max-w-md rounded-3xl border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-6">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-rose-500">Your Topic</h2>
-            <p className="text-3xl font-black text-center leading-tight">
+          <div className="w-[90%] max-w-md rounded-3xl border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-6 relative">
+            <button 
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-5 text-xl font-bold text-zinc-400 hover:text-black transition-colors"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            <h2 className="text-sm font-bold uppercase tracking-widest text-rose-500 mt-2">Your Topic</h2>
+            <p className="text-3xl font-bold tracking-tight text-center leading-tight">
               {selectedTopicStr}
             </p>
             <div className="flex w-full flex-col gap-3 mt-4">
