@@ -3,33 +3,41 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/utils/supabase/client";
 
-const DEFAULT_TOPICS = [
-  "favorite fashion trends currently",
-  "what I learned this week",
-  "an entertaining childhood memory",
-  "my dream travel destination",
-  "the best advice I've ever received",
-  "the return of Y2K fashion aesthetics",
-  "clean girl makeup vs maximalist beauty",
-  "how tiktok impacts fast fashion",
-  "sustainability in the beauty industry",
-  "my signature scent profile",
-  "how AI is changing creative jobs",
-  "the future of spatial computing and AR",
-  "is the metaverse dead or evolving?",
-  "my favorite productivity app stack",
-  "short-form video vs long-form content",
-  "parasocial relationships with influencers",
-  "cancel culture and brand accountability",
-  "the psychology behind doomscrolling",
-  "how algorithms shape our music taste",
-  "the best subscription service I pay for",
-  "remote work vs return-to-office culture",
-  "the evolution of internet meme culture",
-  "how I curate my digital identity",
-  "my strategy for unplugging from screens",
-  "a niche internet micro-community I observe"
-];
+function TopicBankView({ topics, onBack }: { topics: string[], onBack: () => void }) {
+  return (
+    <div className="flex h-[500px] w-full max-w-5xl flex-col rounded-3xl border-4 border-black bg-white p-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative transition-all overflow-hidden">
+      <div className="flex justify-between items-center mb-8">
+        <button 
+          onClick={onBack}
+          className="text-sm font-bold uppercase tracking-widest text-zinc-400 hover:text-black transition-colors"
+        >
+          ← Back
+        </button>
+        <h2 className="text-2xl font-extrabold tracking-tight">
+          Topic Bank
+        </h2>
+        <div className="w-16"></div> {/* spacer to center title */}
+      </div>
+
+      <div className="flex-1 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-zinc-200">
+        {topics.length === 0 ? (
+          <div className="flex h-full items-center justify-center flex-col gap-2">
+            <div className="text-5xl">🕸️</div>
+            <div className="text-zinc-500 font-medium">No topics available.</div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3 pb-8">
+            {topics.map((topic, index) => (
+              <div key={index} className="flex p-5 rounded-2xl border-2 border-zinc-100 bg-zinc-50 hover:border-black hover:bg-white transition-colors">
+                 <span className="font-bold text-lg leading-tight">{topic}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function TimerView({ topic, onBack, onComplete }: { topic: string; onBack: () => void; onComplete: () => void }) {
   const [phase, setPhase] = useState<'brainstorm' | 'speak' | 'completed'>('brainstorm');
@@ -114,12 +122,20 @@ function TimerView({ topic, onBack, onComplete }: { topic: string; onBack: () =>
           </div>
 
           {!isRunning && timeLeft === 60 ? (
-            <button 
-              onClick={handleStart}
-              className="rounded-2xl bg-black px-12 py-4 text-xl font-bold text-white transition-transform hover:-translate-y-1 hover:shadow-[0px_4px_0px_0px_rgba(225,29,72,1)] active:translate-y-0 active:shadow-none"
-            >
-              {phase === 'brainstorm' ? 'Start Brainstorming' : 'Start Speaking Now'}
-            </button>
+            <div className="flex gap-4">
+              <button 
+                onClick={handleStart}
+                className="rounded-2xl bg-black px-12 py-4 text-xl font-bold text-white transition-transform hover:-translate-y-1 hover:shadow-[0px_4px_0px_0px_rgba(225,29,72,1)] active:translate-y-0 active:shadow-none"
+              >
+                {phase === 'brainstorm' ? 'Start Brainstorming' : 'Start Speaking Now'}
+              </button>
+              <button 
+                onClick={() => { setTimeLeft(0); setIsRunning(true); }}
+                className="rounded-2xl px-8 py-4 text-xl font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+              >
+                End Session
+              </button>
+            </div>
           ) : (
             <div className="flex gap-4">
               <button 
@@ -136,6 +152,12 @@ function TimerView({ topic, onBack, onComplete }: { topic: string; onBack: () =>
                 className="rounded-2xl px-8 py-3 text-xl font-bold text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
               >
                 Restart
+              </button>
+              <button 
+                onClick={() => { setTimeLeft(0); setIsRunning(true); }}
+                className="rounded-2xl px-8 py-3 text-xl font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+              >
+                End Session
               </button>
             </div>
           )}
@@ -223,14 +245,36 @@ function HistoryView({ onBack }: { onBack: () => void }) {
 }
 
 export default function Home() {
-  const [topics, setTopics] = useState(DEFAULT_TOPICS);
-  const [view, setView] = useState<'spinner' | 'timer' | 'history'>('spinner');
+  const [topics, setTopics] = useState<string[]>([]);
+  const [view, setView] = useState<'spinner' | 'timer' | 'history' | 'topicBank'>('spinner');
   const [isSpinning, setIsSpinning] = useState(false);
   const [spinOffset, setSpinOffset] = useState(0);
-  const [selectedTopicStr, setSelectedTopicStr] = useState(DEFAULT_TOPICS[0]);
+  const [selectedTopicStr, setSelectedTopicStr] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTopicVal, setNewTopicVal] = useState("");
+  const [isLoadingTopics, setIsLoadingTopics] = useState(true);
+
+  useEffect(() => {
+    async function fetchTopics() {
+      setIsLoadingTopics(true);
+      const { data, error } = await supabase
+        .from('topics')
+        .select('content')
+        .eq('is_active', true)
+        .order('created_at', { ascending: true });
+        
+      if (!error && data) {
+        const fetchedTopics = data.map((t: any) => t.content);
+        setTopics(fetchedTopics);
+        if (fetchedTopics.length > 0) {
+          setSelectedTopicStr(fetchedTopics[0]);
+        }
+      }
+      setIsLoadingTopics(false);
+    }
+    fetchTopics();
+  }, []);
   
   const handleSpin = () => {
     if (isSpinning) return;
@@ -260,9 +304,10 @@ export default function Home() {
     setView('timer');
   };
 
-  const handleSessionComplete = () => {
+  const handleSessionComplete = async () => {
     // Remove the completed topic from our active list by exact string match
     setTopics(prev => prev.filter(t => t !== selectedTopicStr));
+    await supabase.from('topics').update({ is_active: false }).eq('content', selectedTopicStr);
   };
 
   return (
@@ -313,7 +358,13 @@ export default function Home() {
                  style={{ transform: `translateY(-${spinOffset * 72}px)` }}
                >
                   <div style={{ paddingTop: '108px' }}>
-                    {topics.length > 0 ? Array.from({ length: Math.max(50, spinOffset + 20) }).map((_, i) => {
+                    {isLoadingTopics ? (
+                      <div className="h-[72px] flex items-center justify-center px-8 w-full">
+                         <span className="font-bold text-xl text-center leading-tight text-zinc-400 opacity-80 animate-pulse">
+                            Loading topics...
+                         </span>
+                      </div>
+                    ) : topics.length > 0 ? Array.from({ length: Math.max(50, spinOffset + 20) }).map((_, i) => {
                       const topic = topics[i % topics.length];
                       const isSelected = i === spinOffset;
                       // Visual active state only when fully landed
@@ -358,12 +409,20 @@ export default function Home() {
           </div>
 
         </main>
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="mt-8 text-base font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
-        >
-          + Add Custom Topic
-        </button>
+        <div className="flex w-full mt-8 justify-between px-8">
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="text-base font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
+          >
+            + Add Custom Topic
+          </button>
+          <button 
+            onClick={() => setView('topicBank')}
+            className="text-base font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
+          >
+            Topic Bank
+          </button>
+        </div>
         </div>
       ) : view === 'timer' ? (
         <TimerView 
@@ -371,8 +430,13 @@ export default function Home() {
           onBack={() => setView('spinner')} 
           onComplete={handleSessionComplete}
         />
-      ) : (
+      ) : view === 'history' ? (
         <HistoryView 
+          onBack={() => setView('spinner')}
+        />
+      ) : (
+        <TopicBankView
+          topics={topics}
           onBack={() => setView('spinner')}
         />
       )}
@@ -396,11 +460,13 @@ export default function Home() {
               className="w-full rounded-2xl border-4 border-black p-4 font-bold placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-rose-200 resize-none h-32"
             />
             <button 
-              onClick={() => {
+              onClick={async () => {
                 if (newTopicVal.trim()) {
-                  setTopics([newTopicVal.trim(), ...topics]);
+                  const val = newTopicVal.trim();
+                  setTopics([val, ...topics]);
                   setNewTopicVal("");
                   setShowAddModal(false);
+                  await supabase.from('topics').insert({ content: val, is_active: true });
                 }
               }}
               className="w-full rounded-2xl bg-black py-4 text-lg font-bold text-white transition-transform hover:-translate-y-1 hover:shadow-[0px_4px_0px_0px_rgba(225,29,72,1)] active:translate-y-0 active:shadow-none"

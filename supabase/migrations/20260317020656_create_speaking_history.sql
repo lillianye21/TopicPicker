@@ -1,7 +1,5 @@
 create extension if not exists "pg_net" with schema "extensions";
 
-drop function if exists "public"."rls_auto_enable"();
-
 
   create table "public"."speaking_history" (
     "id" uuid not null default gen_random_uuid(),
