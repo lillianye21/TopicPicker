@@ -228,11 +228,8 @@ function HistoryView({ onBack }: { onBack: () => void }) {
                     <span className="font-bold text-lg leading-tight">{log.topic}</span>
                  </div>
                  <div className="flex flex-col items-start sm:items-end gap-1 min-w-[120px]">
-                    <span className="text-xs font-bold uppercase tracking-widest text-rose-500">
+                    <span className="text-lg font-bold uppercase tracking-widest text-rose-500">
                        {new Date(log.created_at).toLocaleDateString()}
-                    </span>
-                    <span className="text-sm font-medium text-zinc-400">
-                       {log.duration_seconds} sec
                     </span>
                  </div>
               </div>
