@@ -5,7 +5,7 @@ import { supabase } from "@/utils/supabase/client";
 
 function TopicBankView({ topics, onBack }: { topics: string[], onBack: () => void }) {
   return (
-    <div className="flex h-[500px] w-full max-w-5xl flex-col rounded-3xl border-4 border-black bg-white p-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative transition-all overflow-hidden">
+    <div className="flex min-h-[70vh] md:min-h-0 md:h-[500px] w-full max-w-5xl flex-col rounded-3xl border-4 border-black bg-white p-5 sm:p-6 md:p-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative transition-all overflow-hidden">
       <div className="flex justify-between items-center mb-8">
         <button 
           onClick={onBack}
@@ -99,7 +99,7 @@ function TimerView({ topic, onBack, onComplete }: { topic: string; onBack: () =>
   const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
   return (
-    <div className="flex h-[500px] w-full max-w-5xl flex-col items-center justify-center rounded-3xl border-4 border-black bg-white p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-center relative transition-all">
+    <div className="flex min-h-[80vh] md:min-h-0 md:h-[500px] w-full max-w-5xl flex-col items-center justify-center rounded-3xl border-4 border-black bg-white p-6 md:p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-center relative transition-all">
       <button 
         onClick={onBack}
         className="absolute top-8 left-8 text-sm font-bold uppercase tracking-widest text-zinc-400 hover:text-black transition-colors"
@@ -107,40 +107,40 @@ function TimerView({ topic, onBack, onComplete }: { topic: string; onBack: () =>
         ← Back
       </button>
 
-      <h2 className={`text-xl font-bold uppercase tracking-widest mb-4 ${phase === 'completed' ? 'text-black' : 'text-rose-500'}`}>
+      <h2 className={`text-base md:text-xl font-bold uppercase tracking-widest mb-4 ${phase === 'completed' ? 'text-black' : 'text-rose-500'}`}>
         {phase === 'brainstorm' ? 'Brainstorming Session' : phase === 'speak' ? 'Speaking Session' : 'Session Complete'}
       </h2>
       
-      <p className="text-[2rem] font-extrabold tracking-tight leading-tight max-w-2xl mb-12">
+      <p className="text-xl md:text-[2rem] font-extrabold tracking-tight leading-tight max-w-2xl mb-6 md:mb-12">
         {topic}
       </p>
 
       {phase !== 'completed' ? (
         <>
-          <div className="text-8xl font-extrabold tabular-nums tracking-tight mb-12 drop-shadow-sm">
+          <div className="text-6xl md:text-8xl font-extrabold tabular-nums tracking-tight mb-6 md:mb-12 drop-shadow-sm">
             {timeString}
           </div>
 
           {!isRunning && timeLeft === 60 ? (
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto items-center">
               <button 
                 onClick={handleStart}
-                className="rounded-2xl bg-black px-12 py-4 text-xl font-bold text-white transition-transform hover:-translate-y-1 hover:shadow-[0px_4px_0px_0px_rgba(225,29,72,1)] active:translate-y-0 active:shadow-none"
+                className="rounded-2xl bg-black px-8 md:px-12 py-4 text-lg md:text-xl font-bold text-white transition-transform hover:-translate-y-1 hover:shadow-[0px_4px_0px_0px_rgba(225,29,72,1)] active:translate-y-0 active:shadow-none w-full sm:w-auto"
               >
                 {phase === 'brainstorm' ? 'Start Brainstorming' : 'Start Speaking Now'}
               </button>
               <button 
                 onClick={() => { setTimeLeft(0); setIsRunning(true); }}
-                className="rounded-2xl px-8 py-4 text-xl font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                className="rounded-2xl px-8 py-4 text-lg md:text-xl font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
               >
                 End Session
               </button>
             </div>
           ) : (
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto items-center">
               <button 
                 onClick={isRunning ? handlePause : handleStart}
-                className="rounded-2xl border-4 border-black bg-white px-12 py-3 text-xl font-bold text-black transition-transform hover:-translate-y-1 hover:shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none min-w-[160px]"
+                className="rounded-2xl border-4 border-black bg-white px-8 md:px-12 py-3 text-lg md:text-xl font-bold text-black transition-transform hover:-translate-y-1 hover:shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none min-w-[140px] md:min-w-[160px] w-full sm:w-auto"
               >
                 {isRunning ? 'Pause' : 'Resume'}
               </button>
@@ -149,13 +149,13 @@ function TimerView({ topic, onBack, onComplete }: { topic: string; onBack: () =>
                   setIsRunning(false);
                   setTimeLeft(60);
                 }}
-                className="rounded-2xl px-8 py-3 text-xl font-bold text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
+                className="rounded-2xl px-8 py-3 text-lg md:text-xl font-bold text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
               >
                 Restart
               </button>
               <button 
                 onClick={() => { setTimeLeft(0); setIsRunning(true); }}
-                className="rounded-2xl px-8 py-3 text-xl font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                className="rounded-2xl px-8 py-3 text-lg md:text-xl font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
               >
                 End Session
               </button>
@@ -196,7 +196,7 @@ function HistoryView({ onBack }: { onBack: () => void }) {
   }, []);
 
   return (
-    <div className="flex h-[500px] w-full max-w-5xl flex-col rounded-3xl border-4 border-black bg-white p-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative transition-all overflow-hidden">
+    <div className="flex min-h-[70vh] md:min-h-0 md:h-[500px] w-full max-w-5xl flex-col rounded-3xl border-4 border-black bg-white p-5 sm:p-6 md:p-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative transition-all overflow-hidden">
       <div className="flex justify-between items-center mb-8">
         <button 
           onClick={onBack}
@@ -308,11 +308,11 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f4f4f5] font-sans text-black overflow-hidden selection:bg-rose-200">
+    <div className="flex min-h-screen items-center justify-center bg-[#f4f4f5] font-sans text-black overflow-x-hidden selection:bg-rose-200 px-4 md:px-0 py-8 md:py-0">
       
       {view === 'spinner' ? (
         <div className="flex flex-col items-center w-full max-w-5xl">
-        <main className="flex h-[500px] w-full items-center justify-between rounded-3xl border-4 border-black bg-white p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all relative">
+        <main className="flex flex-col md:flex-row min-h-0 md:h-[500px] w-full items-center md:justify-between rounded-3xl border-4 border-black bg-white p-6 md:p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all relative">
           
           <button 
             onClick={() => setView('history')}
@@ -322,23 +322,23 @@ export default function Home() {
           </button>
 
           {/* APP TITLE */}
-          <div className="flex-[1.2] pr-8 z-10 w-full mt-4">
+          <div className="md:flex-[1.2] md:pr-8 z-10 w-full mt-8 md:mt-4 text-center md:text-left">
             <h1 
-              className="text-[4rem] tracking-tight leading-[0.9] drop-shadow-sm"
+              className="text-[2.2rem] md:text-[4rem] tracking-tight leading-[0.9] drop-shadow-sm"
               style={{ fontFamily: 'digibop, sans-serif', fontStyle: 'normal', fontWeight: 400 }}
             >
               Impromptu<br/>
               <span className="text-rose-500">Speaking</span><br/>
               Spinner
             </h1>
-            <p className="mt-6 text-zinc-500 font-medium text-lg leading-snug pr-4">
+            <p className="mt-4 md:mt-6 text-zinc-500 font-medium text-base md:text-lg leading-snug md:pr-4">
               Take 1 minute to speak on a random topic and improve your articulation.
             </p>
           </div>
 
           {/* Topic Spinner */}
-          <div className="flex-[1.5] w-full flex justify-center relative">
-            <div className="h-72 w-full max-w-sm rounded-2xl border-4 border-black overflow-hidden relative shadow-[inset_0px_4px_12px_rgba(0,0,0,0.1)] bg-zinc-100 flex flex-col">
+          <div className="md:flex-[1.5] w-full flex justify-center relative mt-6 md:mt-0">
+            <div className="h-56 md:h-72 w-full max-w-sm rounded-2xl border-4 border-black overflow-hidden relative shadow-[inset_0px_4px_12px_rgba(0,0,0,0.1)] bg-zinc-100 flex flex-col">
                {/* Gradient Overlays for depth */}
                <div className="absolute top-0 w-full h-20 bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-transparent z-10 pointer-events-none"></div>
                <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-zinc-100 via-zinc-100/80 to-transparent z-10 pointer-events-none"></div>
@@ -386,8 +386,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Lever */}
-          <div className="flex-[0.8] flex justify-end">
+          {/* Lever — hidden on mobile, replaced by spin button below */}
+          <div className="hidden md:flex flex-[0.8] justify-end">
             <button 
               onClick={handleSpin}
               disabled={isSpinning || topics.length === 0}
@@ -405,17 +405,32 @@ export default function Home() {
             </button>
           </div>
 
+          {/* Mobile Spin Button — visible only on small screens */}
+          <div className="flex md:hidden w-full justify-center mt-6 mb-2">
+            <button
+              onClick={handleSpin}
+              disabled={isSpinning || topics.length === 0}
+              className={`rounded-2xl px-10 py-4 text-lg font-bold uppercase tracking-widest transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed ${
+                isSpinning
+                  ? 'bg-rose-500 text-white shadow-none'
+                  : 'bg-black text-white hover:shadow-[0px_4px_0px_0px_rgba(225,29,72,1)]'
+              }`}
+            >
+              {isSpinning ? 'Spinning...' : 'Spin'}
+            </button>
+          </div>
+
         </main>
-        <div className="flex w-full mt-8 justify-between px-8">
+        <div className="flex w-full mt-6 md:mt-8 justify-between px-2 sm:px-4 md:px-8">
           <button 
             onClick={() => setShowAddModal(true)}
-            className="text-base font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
+            className="text-xs sm:text-sm md:text-base font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
           >
             + Add Custom Topic
           </button>
           <button 
             onClick={() => setView('topicBank')}
-            className="text-base font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
+            className="text-xs sm:text-sm md:text-base font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
           >
             Topic Bank
           </button>
